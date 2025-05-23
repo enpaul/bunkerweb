@@ -13,6 +13,7 @@ for deps_path in [join(sep, "usr", "share", "bunkerweb", *paths) for paths in ((
         sys_path.append(deps_path)
 
 from Database import Database  # type: ignore
+from common_utils import load_secret
 from logger import setup_logger  # type: ignore
 from jobs import Job  # type: ignore
 from backup import backup_database, update_cache_file
@@ -65,7 +66,7 @@ try:
 
         db = JOB.db
     else:
-        db = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI"))
+        db = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI"))
 
     backed_up = False
     if force_backup or not already_done:

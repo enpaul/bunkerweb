@@ -12,7 +12,7 @@ for deps_path in [join(sep, "usr", "share", "bunkerweb", *paths) for paths in ((
         sys_path.append(deps_path)
 
 from jinja2 import Environment, FileSystemLoader
-from common_utils import get_version  # type: ignore
+from common_utils import get_version, load_secret  # type: ignore
 from logger import setup_logger  # type: ignore
 from jobs import Job  # type: ignore
 
@@ -49,7 +49,7 @@ try:
         jinja_env.get_template("crowdsec.conf")
         .render(
             CROWDSEC_API=getenv("CROWDSEC_API", "http://crowdsec:8080"),
-            CROWDSEC_API_KEY=getenv("CROWDSEC_API_KEY", ""),
+            CROWDSEC_API_KEY=load_secret("CROWDSEC_API_KEY", ""),
             CROWDSEC_MODE=getenv("CROWDSEC_MODE", "live"),
             CROWDSEC_REQUEST_TIMEOUT=getenv("CROWDSEC_REQUEST_TIMEOUT", "1000"),
             CROWDSEC_ENABLE_INTERNAL=("true" if getenv("CROWDSEC_ENABLE_INTERNAL", "no") == "yes" else "false"),

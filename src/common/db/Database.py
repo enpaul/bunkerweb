@@ -49,7 +49,7 @@ for deps_path in [os_join(sep, "usr", "share", "bunkerweb", *paths) for paths in
     if deps_path not in sys_path:
         sys_path.append(deps_path)
 
-from common_utils import bytes_hash  # type: ignore
+from common_utils import bytes_hash, load_secret  # type: ignore
 
 from pymysql import install_as_MySQLdb
 from sqlalchemy import case, create_engine, event, MetaData as sql_metadata, func, join, select as db_select, text
@@ -103,9 +103,9 @@ class Database:
         self.sql_engine = None
 
         if not sqlalchemy_string:
-            sqlalchemy_string = getenv("DATABASE_URI", "sqlite:////var/lib/bunkerweb/db.sqlite3")
+            sqlalchemy_string = load_secret("DATABASE_URI", "sqlite:////var/lib/bunkerweb/db.sqlite3")
 
-        sqlalchemy_string_readonly = getenv("DATABASE_URI_READONLY", "")
+        sqlalchemy_string_readonly = load_secret("DATABASE_URI_READONLY", "")
 
         if not sqlalchemy_string:
             sqlalchemy_string = sqlalchemy_string_readonly or "sqlite:////var/lib/bunkerweb/db.sqlite3"

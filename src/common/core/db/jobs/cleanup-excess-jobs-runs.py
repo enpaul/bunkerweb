@@ -10,13 +10,14 @@ for deps_path in [join(sep, "usr", "share", "bunkerweb", *paths) for paths in ((
         sys_path.append(deps_path)
 
 from Database import Database  # type: ignore
+from common_utils import load_secret
 from logger import setup_logger  # type: ignore
 
 LOGGER = setup_logger("DB.CLEANUP-EXCESS-JOBS-RUNS")
 status = 0
 
 try:
-    DB = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI"))
+    DB = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI"))
     ret = DB.cleanup_jobs_runs_excess(int(getenv("DATABASE_MAX_JOBS_RUNS", "10000")))
     if not ret.startswith("Removed"):
         LOGGER.error(ret)

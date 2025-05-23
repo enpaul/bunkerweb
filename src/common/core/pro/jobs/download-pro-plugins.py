@@ -23,6 +23,7 @@ from requests import get
 from requests.exceptions import ConnectionError
 
 from Database import Database  # type: ignore
+from common_utils import load_secret
 from logger import setup_logger  # type: ignore
 from common_utils import bytes_hash, get_os_info, get_integration, get_version  # type: ignore
 
@@ -102,10 +103,10 @@ def install_plugin(plugin_path: Path, db, preview: bool = True) -> bool:
 
 
 try:
-    db = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI"))
+    db = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI"))
     db_metadata = db.get_metadata()
     current_date = datetime.now().astimezone()
-    pro_license_key = getenv("PRO_LICENSE_KEY", "").strip()
+    pro_license_key = load_secret("PRO_LICENSE_KEY", "").strip()
 
     LOGGER.info("Checking BunkerWeb Pro status...")
 

@@ -31,7 +31,7 @@ from magic import Magic
 from requests import get
 from requests.exceptions import ConnectionError
 
-from common_utils import bytes_hash  # type: ignore
+from common_utils import bytes_hash, load_secret  # type: ignore
 from Database import Database  # type: ignore
 from logger import setup_logger  # type: ignore
 
@@ -100,7 +100,7 @@ try:
         LOGGER.info("No external plugins to download")
         sys_exit(0)
 
-    db = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI"))
+    db = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI"))
     plugin_nbr = 0
 
     # Loop on URLs

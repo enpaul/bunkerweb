@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from os import getenv, sep
+from os import sep
 from os.path import join
 from pathlib import Path
 from sys import exit as sys_exit, path as sys_path
@@ -11,7 +11,7 @@ for deps_path in [join(sep, "usr", "share", "bunkerweb", *paths) for paths in ((
         sys_path.append(deps_path)
 
 from Database import Database  # type: ignore
-from common_utils import get_integration  # type: ignore
+from common_utils import get_integration, load_secret  # type: ignore
 from logger import setup_logger  # type: ignore
 from API import API  # type: ignore
 
@@ -20,14 +20,14 @@ status = 0
 
 try:
     # Get env vars
-    token = getenv("CERTBOT_TOKEN", "")
+    token = load_secret("CERTBOT_TOKEN", "")
     integration = get_integration()
 
     LOGGER.info(f"Detected {integration} integration")
 
     # Cluster case
     if integration in ("Docker", "Swarm", "Kubernetes", "Autoconf"):
-        db = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI", None))
+        db = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI", None))
         instances = db.get_instances()
 
         LOGGER.info(f"Cleaning challenge from {len(instances)} instances")

@@ -12,6 +12,7 @@ for deps_path in [join(sep, "usr", "share", "bunkerweb", *paths) for paths in ((
         sys_path.append(deps_path)
 
 from Database import Database  # type: ignore
+from common_utils import load_secret
 from logger import setup_logger  # type: ignore
 from API import API  # type: ignore
 
@@ -20,7 +21,7 @@ status = 0
 
 try:
     # Get env vars
-    token = getenv("CERTBOT_TOKEN", "")
+    token = load_secret("CERTBOT_TOKEN", "")
 
     LOGGER.info(f"Certificates renewal for {getenv('RENEWED_DOMAINS')} successful")
 
@@ -32,7 +33,7 @@ try:
     tgz.seek(0, 0)
     files = {"archive.tar.gz": tgz}
 
-    db = Database(LOGGER, sqlalchemy_string=getenv("DATABASE_URI", None))
+    db = Database(LOGGER, sqlalchemy_string=load_secret("DATABASE_URI", None))
 
     instances = db.get_instances()
     services = db.get_non_default_settings(global_only=True, methods=False, with_drafts=True, filtered_settings=("SERVER_NAME",))["SERVER_NAME"].split(" ")
