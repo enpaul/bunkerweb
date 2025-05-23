@@ -234,3 +234,34 @@ def get_redis_client(
         if logger:
             logger.error(f"Failed to connect to Redis: {e}")
         return None
+
+
+def load_secret(
+    name: str,
+    default: Optional[str] = None,
+    logger: Optional[logging.Logger] = None,
+) -> str:
+    """
+    Load a sensitive value from the environment or optionally from the
+    contents of a file.
+
+    Args:
+        name: Name of the environment variable to load the value from
+        default: The default value to return
+
+    Returns:
+        Value of the secret, either from a file or the environment
+    """
+
+    secret_file = getenv(f"{name}_FILE")
+
+    if secret_file:
+        try:
+            with open(secret_file, "r") as infile:
+                return infile.read().strip()
+        except Exception as e:
+            if logger:
+                logger.error(f"Failed to load secret from {secret_file}: {e}")
+            return getenv(name, default)
+
+    return getenv(name, default)
